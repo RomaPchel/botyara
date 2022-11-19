@@ -1,8 +1,18 @@
 # Botyara
 Telegram bot that downloads media file from YouTube depending on users input.
 
-To install packages run
+To start working install pip
 
 ```
-  pip install
+curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+```
+than run
+```
+python get-pip.py
+```
+
+Final step, install packages
+
+```
+pip install
 ```
