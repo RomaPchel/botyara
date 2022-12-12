@@ -2,21 +2,19 @@ import telebot
 
 
 class MessageHandler:
-    def __init__(self, name, bot, message_sender, start_command, get_videos_command, install_command, help_command):
+    def __init__(self, name, bot, message_sender, commands_dict):
         self.__name = name
         self.__bot = bot
         self.__message_sender = message_sender
-        self.__start_command = start_command
-        self.__get_videos_command = get_videos_command
-        self.__install_command = install_command
-        self.__help_command = help_command
+        self.__start_command = commands_dict["start_command"]
+        self.__get_videos_command = commands_dict["get_videos_command"]
+        self.__install_command = commands_dict["install_command"]
+        self.__help_command = commands_dict["help_command"]
 
         @self.__bot.message_handler(commands=[self.__start_command])
         def start(message):
             self.__bot.send_message(message.chat.id,
-                                    self.__message_sender.send_welcome_message(self.__name, self.__get_videos_command,
-                                                                               self.__install_command,
-                                                                               self.__help_command))
+                                    self.__message_sender.send_welcome_message())
 
         @self.__bot.message_handler(commands=[self.__get_videos_command])
         def get_videos(message):
@@ -39,7 +37,7 @@ class MessageHandler:
         @self.__bot.message_handler(commands=[self.__help_command])
         def get_help(message):
             self.__bot.send_message(message.chat.id,
-                                    self.__message_sender.send_help_message(self.__name, self.__start_command))
+                                    self.__message_sender.send_help_message())
 
     def __get_markup(self, message):
         user_markup = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=True)
