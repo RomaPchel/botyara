@@ -1,4 +1,4 @@
-from bot import Bot
+from src.bot.bot import Bot
 import os
 from dotenv import load_dotenv
 from pathlib import Path
