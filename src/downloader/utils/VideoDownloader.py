@@ -1,9 +1,9 @@
 import youtube_dl as yt
 
-from src.models.Downloader import ParserInterface
+from src.downloader.models.Downloader import DownloaderInterface
 
 
-class VideoDownloader(ParserInterface):
+class VideoDownloader(DownloaderInterface):
 
     @staticmethod
     def download(link):

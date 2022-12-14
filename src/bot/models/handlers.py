@@ -1,5 +1,5 @@
-from src.utils.AudioDownloader import AudioDownloader
-from src.utils.VideoDownloader import VideoDownloader
+from src.downloader.utils import AudioDownloader
+from src.downloader.utils.VideoDownloader import VideoDownloader
 from src.bot.components.messages.messages import Messages
 from src.bot.components.commands.commands import Commands
 from src.bot.components.keyboards.buttons.buttons import Buttons

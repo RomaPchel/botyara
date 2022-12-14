@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class ParserInterface(ABC):
+class DownloaderInterface(ABC):
 
     @staticmethod
     @abstractmethod
