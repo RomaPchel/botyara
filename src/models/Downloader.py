@@ -1,10 +1,10 @@
-class ParserInterface:
+from abc import ABC, abstractmethod
+
+
+class ParserInterface(ABC):
 
     @staticmethod
-    def download_video( link, chat_id, msg_id):
+    @abstractmethod
+    def download(link):
         """Attempts to download a video"""
-        pass
-
-    def download_song(self):
-        """Attempts to download a song"""
         pass

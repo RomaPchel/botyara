@@ -1,8 +1,8 @@
-import config as bot
+from configuration import config as bot
 
 
 class BotCreator:
 
     @staticmethod
-    def create(name, token):
-        return bot.Bot(name, token)
+    def create(token):
+        return bot.Bot(token)

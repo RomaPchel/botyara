@@ -1,55 +1,86 @@
-import telebot
+from src.utils.AudioDownloader import AudioDownloader
+from src.utils.VideoDownloader import VideoDownloader
+from src.bot.components.messages.messages import Messages
+from src.bot.components.commands.commands import Commands
+from src.bot.components.keyboards.buttons.buttons import Buttons
+from src.parser.parser import YouTubeParser
+from src.bot.components.keyboards.keyboard import KeyBoard
 
 
 class MessageHandler:
-    def __init__(self, name, bot, message_sender, commands_dict):
-        self.__name = name
+    def __init__(self, bot):
         self.__bot = bot
-        self.__message_sender = message_sender
-        self.__start_command = commands_dict["start_command"]
-        self.__get_videos_command = commands_dict["get_videos_command"]
-        self.__install_command = commands_dict["install_command"]
-        self.__help_command = commands_dict["help_command"]
+        youtube_parser = YouTubeParser()
 
-        @self.__bot.message_handler(commands=[self.__start_command])
+        @self.__bot.message_handler(commands=[Commands.START_COMMAND])
         def start(message):
-            self.__bot.send_message(message.chat.id,
-                                    self.__message_sender.send_welcome_message())
+            self.__bot.send_message(message.chat.id, Messages.WELCOME_MESSAGE)
 
-        @self.__bot.message_handler(commands=[self.__get_videos_command])
-        def get_videos(message):
-            msg = self.__bot.send_message(message.chat.id, self.__message_sender.send_response_to_get_videos_command())
-            self.__bot.register_next_step_handler(msg, find_video)
+        @self.__bot.message_handler(commands=[Commands.GET_VIDEOS_COMMAND])
+        def ask_for_title(message):
+            title_message = self.__bot.send_message(message.chat.id, Messages.ENTER_THE_TITLE_MESSAGE)
+            self.__bot.register_next_step_handler(title_message, ask_for_number)
 
-        def find_video(message):
-            if message.text[0] == '/':
-                self.__bot.send_message(message.chat.id,
-                                        self.__message_sender.send_response_to_invalid_message(message.text))
-            else:
-                self.__bot.send_message(message.chat.id, message.text)
-
-        @self.__bot.message_handler(commands=[self.__install_command])
+        @self.__bot.message_handler(commands=[Commands.INSTALL_COMMAND])
         def install(message):
+            user_markup = KeyBoard.generate_keyboard()
 
-            msg = self.__bot.send_message(message.chat.id, self.__message_sender.send_response_to_search_command())
-            self.__bot.register_next_step_handler(msg, self.__get_markup)
+            choice_message = self.__bot.send_message(message.chat.id, Messages.CHOICE_MESSAGE,
+                                                     reply_markup=user_markup)
+            self.__bot.register_next_step_handler(choice_message, choose_format)
 
-        @self.__bot.message_handler(commands=[self.__help_command])
+        @self.__bot.message_handler(commands=[Commands.HELP_COMMAND])
         def get_help(message):
-            self.__bot.send_message(message.chat.id,
-                                    self.__message_sender.send_help_message())
+            self.__bot.send_message(message.chat.id, Messages.HELP_MESSAGE)
 
-    def __get_markup(self, message):
-        user_markup = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=True)
-        user_markup.row("MP3")
-        user_markup.row("MP4")
+        @self.__bot.message_handler(commands=[Commands.FORMATS_INFO_COMMAND])
+        def get_formats(message):
+            self.__bot.send_message(message.chat.id, Messages.FORMATS_MESSAGE)
 
-        msg = self.__bot.send_message(message.chat.id, self.__message_sender.send_choice_message(),
-                                      reply_markup=user_markup)
-        self.__bot.register_next_step_handler(msg, self.__get_file)
+        def ask_for_number(message):
+            youtube_parser.set_title(message.text)
 
-    def __get_file(self, message):
-        if message.text == "MP3":
-            self.__bot.send_message(message.chat.id, "mp3 chosen")
-        elif message.text == "MP4":
-            self.__bot.send_message(message.chat.id, "mp4 chosen")
+            number_message = self.__bot.send_message(message.chat.id, Messages.GIVE_NUMBER_OF_VIDEOS_MESSAGE)
+            self.__bot.register_next_step_handler(number_message, get_videos)
+
+        def get_videos(number_message):
+            try:
+                number_of_the_videos = int(number_message.text)
+                parse_result_dict = youtube_parser.parse(number_of_the_videos)
+
+                for obj in parse_result_dict:
+                    self.__bot.send_message(number_message.chat.id, f"https://www.youtube.com{obj['url_suffix']}")
+            except ValueError:
+                self.__bot.send_message(number_message.chat.id, Messages.WRONG_TYPE_OF_NUMBER_MESSAGE)
+
+        def choose_format(message):
+            if message.text == Buttons.MP3:
+                link = self.__bot.send_message(message.chat.id, Messages.GIVE_THE_LINK_MESSAGE)
+                self.__bot.register_next_step_handler(link, get_audio)
+            elif message.text == Buttons.MP4:
+                link = self.__bot.send_message(message.chat.id, Messages.GIVE_THE_LINK_MESSAGE)
+                self.__bot.register_next_step_handler(link, get_video)
+            else:
+                self.__bot.send_message(message.chat.id, Messages.WRONG_FORMAT_ERROR_MESSAGE)
+
+        def get_audio(link_message):
+            self.__bot.send_message(link_message.chat.id, "Downloading...")
+
+            try:
+                file_info_list = AudioDownloader.download(link_message.text)
+                self.__bot.send_audio(link_message.chat.id, audio=open(file_info_list[0], 'rb'),
+                                      duration=file_info_list[1])
+
+            except ValueError:
+                self.__bot.send_message(link_message.chat.id, Messages.WRONG_URL_ERROR_MESSAGE)
+
+        def get_video(link_message):
+
+            try:
+                file_info_list = VideoDownloader.download(link_message.text)
+
+                self.__bot.send_video(link_message.chat.id, video=open(file_info_list[0], 'rb'),
+                                      duration=file_info_list[1])
+
+            except ValueError:
+                self.__bot.send_message(link_message.chat.id, Messages.WRONG_URL_ERROR_MESSAGE)
