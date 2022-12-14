@@ -1,4 +1,4 @@
-from src.downloader.utils import AudioDownloader
+from src.downloader.utils.AudioDownloader import AudioDownloader
 from src.downloader.utils.VideoDownloader import VideoDownloader
 from src.bot.components.messages.messages import Messages
 from src.bot.components.commands.commands import Commands

@@ -29,4 +29,3 @@ class AudioDownloader(DownloaderInterface):
             raise ValueError
 
         return filename, duration
-
