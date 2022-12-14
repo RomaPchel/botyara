@@ -84,6 +84,8 @@ def get_audio(link_message):
 
 
 def get_video(link_message):
+    bot.send_message(link_message.chat.id, "Downloading...")
+
     try:
         file_info_list = VideoDownloader.download(link_message.text)
 
