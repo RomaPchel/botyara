@@ -4,7 +4,7 @@ from src.bot.components.keyboards.buttons.buttons import Buttons
 
 class Messages:
 
-    WELCOME_MESSAGE = f"Hello! This is Bot for getting and dowloading content from Youtube. " \
+    WELCOME_MESSAGE = f"Hello! This is Bot for getting and downloading content from Youtube. " \
                f"you can use /{Commands.GET_VIDEOS_COMMAND} to enter the title of video u want to download;" \
                f"/{Commands.INSTALL_COMMAND} to search video u mentioned and " \
                f"/{Commands.FORMATS_INFO_COMMAND} to get info about formats of content"\
@@ -20,7 +20,8 @@ class Messages:
 
     WRONG_TYPE_OF_NUMBER_MESSAGE = "Number must be integer"
 
-    HELP_MESSAGE = f"{Commands.HELP_COMMAND} will help you to download videos in 2 formats: MP3 and MP4. Also you can find top 5 videos " \
+    HELP_MESSAGE = f"{Commands.HELP_COMMAND} will help you to download videos in 2 formats: MP3 and MP4. Also you can " \ 
+                   f"find top 5 videos " \ 
                f"for the title you " \
                f"send. To start the bot enter /{Commands.START_COMMAND} command."
 

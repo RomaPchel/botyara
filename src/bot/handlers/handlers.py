@@ -1,3 +1,4 @@
+from src.DB.utils.Engine import DAO
 from src.bot.components.commands.commands import Commands
 from src.bot.components.keyboards.buttons.buttons import Buttons
 from src.bot.components.keyboards.keyboard import KeyBoard
@@ -40,6 +41,26 @@ def get_help(message):
 @bot.message_handler(commands=[Commands.FORMATS_INFO_COMMAND])
 def get_formats(message):
     bot.send_message(message.chat.id, Messages.FORMATS_MESSAGE)
+
+
+@bot.message_handler(commands=[Commands.CREATE_PLAYLIST])
+def create_playlist(message):
+    DAO.create_playlist(message.chat.id, message.name)
+
+
+@bot.message_handler(commands=[Commands.ADD_MEDIA])
+def add_media(message):
+    DAO.add_media(message.playlist_id, message.link)
+
+
+@bot.message_handler(commands=[Commands.GET_PLAYLISTS])
+def get_playlists(message):
+    DAO.get_playlists(message.chat.id)
+
+
+@bot.message_handler(commands=[Commands.GET_MEDIAS])
+def get_medias(message):
+    DAO.get_medias_from_playlist(message.playlist_id)
 
 
 def ask_for_number(message):
