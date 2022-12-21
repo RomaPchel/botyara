@@ -6,7 +6,6 @@ import telebot
 class Bot:
     def __init__(self, token):
         self.__bot = telebot.TeleBot(token)
-        #self.__message_handler = MessageHandler(self.__bot)
 
     @property
     def bot(self):

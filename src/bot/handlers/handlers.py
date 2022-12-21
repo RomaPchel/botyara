@@ -44,22 +44,30 @@ def get_formats(message):
 
 
 @bot.message_handler(commands=[Commands.CREATE_PLAYLIST])
-def create_playlist(message):
-    DAO.create_playlist(message.chat.id, message.name)
+def ask_for_name_of_playlist(message):
+    name_of_playlist = bot.send_message(message.chat.id, "Write name of playlist: ")
+    bot.register_next_step_handler(name_of_playlist, create_playlist)
+    # DAO.create_playlist(message.chat.id, message.name)
 
 
 @bot.message_handler(commands=[Commands.ADD_MEDIA])
-def add_media(message):
-    DAO.add_media(message.playlist_id, message.link)
+def choose_playlist(message):
+    name_of_playlist = bot.send_message(message.chat.id, "Write name of playlist you want to add: ")
+    bot.register_next_step_handler(name_of_playlist, add_link_to_current_playlist)
+    # DAO.add_media(message.playlist_id, message.link)
 
 
 @bot.message_handler(commands=[Commands.GET_PLAYLISTS])
 def get_playlists(message):
-    DAO.get_playlists(message.chat.id)
+    list_of_playlists = DAO.get_playlists(message.chat.id)
+    for playlist in list_of_playlists:
+        bot.send_message(message.chat.id, playlist.name)
 
 
 @bot.message_handler(commands=[Commands.GET_MEDIAS])
-def get_medias(message):
+def choose_playlist_to_show_media(message):
+    playlist_name = bot.send_message(message.chat.id, "Write playlist name medias you watn to see: ")
+    bot.register_next_step_handler(playlist_name, get_medias_of_current_playlist)
     DAO.get_medias_from_playlist(message.playlist_id)
 
 
@@ -115,3 +123,21 @@ def get_video(link_message):
 
     except ValueError:
         bot.send_message(link_message.chat.id, Messages.WRONG_URL_ERROR_MESSAGE)
+
+
+def create_playlist(name_of_playlist_message):
+    DAO.create_playlist(name_of_playlist_message.chat.id, name_of_playlist_message.text)
+
+
+def add_link_to_current_playlist(name_of_playlist_message):
+    link_to_add = bot.send_message(name_of_playlist_message.chat.id, "Write link of the video you want to add: ")
+    playlist_id = DAO.get_playlist_by_name_and_chatid(name_of_playlist_message.text, name_of_playlist_message.chat.id)
+    DAO.add_media(playlist_id, link_to_add.text)
+
+
+def get_medias_of_current_playlist(name_of_playlist):
+    playlist_id = DAO.get_playlist_by_name_and_chatid(name_of_playlist.text, name_of_playlist.chat.id)
+    media_list = DAO.get_medias_from_playlist(playlist_id)
+
+    for media in media_list:
+        bot.send_message(name_of_playlist.chat.id, media.link)

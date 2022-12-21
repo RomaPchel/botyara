@@ -12,7 +12,6 @@ from sqlalchemy.orm import Session
 
 class DAO:
 
-
     @staticmethod
     def create_playlist(chat_id: str, name: str) -> None:
         engine = connect_and_get_engine()
@@ -55,3 +54,14 @@ class DAO:
                 .where(Media.playlist_id == playlist_id)
             )
             return session.scalars(medias).all()
+
+    @staticmethod
+    def get_playlist_by_name_and_chatid(name: str, chat_id: str) -> UUID:
+        engine = connect_and_get_engine()
+        with Session(engine) as session:
+            playlist = Playlist(
+                select(Playlist)
+                .where(Playlist.name == name and Playlist.chat_id == chat_id)
+            )
+
+        return playlist.id
