@@ -60,9 +60,8 @@ class DAO:
         engine = connect_and_get_engine()
         with Session(engine) as session:
             playlist = (
-                select(Playlist).where((Playlist.name == name) & (Playlist.chat_id == chat_id))
+                select(Playlist).where((Playlist.name == name) & (Playlist.chat_id == str(chat_id)))
             )
 
         return session.scalars(playlist).one()
 
-    print(get_playlist_by_name_and_chatid("Music", "7a11a296-d620-448b-8a46-58708271d888"))

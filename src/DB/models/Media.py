@@ -8,7 +8,7 @@ class Media(Base):
     __tablename__ = "medias"
 
     id = Column(Integer, primary_key=True)
-    link = Column(String(30))
+    link = Column(String(100))
     playlist_id = Column(UUID, ForeignKey("playlists.id"), nullable=False)
 
     def __str__(self):
