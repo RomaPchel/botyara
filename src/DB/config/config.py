@@ -10,11 +10,6 @@ load_dotenv(dotenv_path=dotenv_path)
 
 
 def connect_and_get_engine():
-    engine = create_engine(f'postgresql+psycopg2://'
-                           f'{os.getenv("DB_USER")}:'
-                           f'{os.getenv("DB_PASSWORD")}@'
-                           f'{os.getenv("DB_HOST")}:'
-                           f'{os.getenv("DB_PORT")}/'
-                           f'{os.getenv("DB_NAME")}')
+    engine = create_engine(f'postgresql+psycopg2://yjihzufs:1BSdxOGjvU8PSnhB5W3PvZfMr61YLW9j@tyke.db.elephantsql.com/yjihzufs')
     Base.metadata.create_all(engine)
     return engine

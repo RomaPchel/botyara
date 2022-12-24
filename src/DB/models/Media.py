@@ -14,3 +14,5 @@ class Media(Base):
     def __str__(self):
         return f'ID: {self.id} link: {self.link} PLAYLIST_ID:{self.playlist_id}'
 
+    def __repr__(self):
+        return str(self)
