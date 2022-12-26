@@ -46,22 +46,22 @@ class DAO:
             return session.scalars(playlists).all()
 
     @staticmethod
-    def get_medias_from_playlist(playlist_id: UUID) -> List[Media]:
+    def get_medias_from_playlist(playlist_id) -> List[Media]:
         engine = connect_and_get_engine()
         with Session(engine) as session:
             medias = (
                 select(Media)
                 .where(Media.playlist_id == playlist_id)
             )
-            return session.scalars(medias).all()
+        return session.scalars(medias).all()
 
     @staticmethod
     def get_playlist_by_name_and_chatid(name: str, chat_id: str) -> UUID:
         engine = connect_and_get_engine()
         with Session(engine) as session:
-            playlist = Playlist(
-                select(Playlist)
-                .where(Playlist.name == name and Playlist.chat_id == chat_id)
+            playlist = (
+                select(Playlist).where((Playlist.name == name) & (Playlist.chat_id == str(chat_id)))
             )
 
-        return playlist.id
+        return session.scalars(playlist).one()
+
