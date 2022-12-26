@@ -1,6 +1,5 @@
 from typing import List
 import uuid
-from sqlalchemy import create_engine
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import UUID
 

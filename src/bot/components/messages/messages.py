@@ -30,3 +30,11 @@ class Messages:
     FORMATS_MESSAGE = f"You can download content in {Buttons.MP3} or {Buttons.MP4}"
 
     GIVE_NUMBER_OF_VIDEOS_MESSAGE = "Enter the number of videos you want to get, please: "
+
+    NAME_OF_PLAYLIST_MESSAGE = "Write name of playlist: "
+
+    LINK_OF_THE_VIDEO = "Write link of the video you want to add: "
+
+    PLAYLIST_ERROR = "No playlist was found"
+
+    DOWNLOADING_MESSAGE = "Downloading..."
