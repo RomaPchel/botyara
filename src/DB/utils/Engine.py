@@ -41,7 +41,7 @@ class DAO:
         with Session(engine) as session:
             playlists = (
                 select(Playlist)
-                .where(Playlist.chat_id == chat_id)
+                .where(Playlist.chat_id == str(chat_id))
             )
             return session.scalars(playlists).all()
 
@@ -65,3 +65,4 @@ class DAO:
 
         return session.scalars(playlist).one()
 
+    print(get_medias_from_playlist("0b45d571-2cb2-4a1e-b4b0-2456b66c232c"))
