@@ -7,10 +7,11 @@ from src.bot.creator import bot_handler
 from src.downloader.utils.AudioDownloader import AudioDownloader
 from src.downloader.utils.VideoDownloader import VideoDownloader
 from src.parser.parser import YouTubeParser
+from sqlalchemy import exc
 
 bot = bot_handler.bot
 
-youtube_parser = YouTubeParser()
+# youtube_parser = YouTubeParser()
 
 
 @bot.message_handler(commands=[Commands.START_COMMAND])
@@ -45,13 +46,13 @@ def get_formats(message):
 
 @bot.message_handler(commands=[Commands.CREATE_PLAYLIST])
 def ask_for_name_of_playlist(message):
-    name_of_playlist = bot.send_message(message.chat.id, "Write name of playlist: ")
+    name_of_playlist = bot.send_message(message.chat.id, Messages.NAME_OF_PLAYLIST_MESSAGE)
     bot.register_next_step_handler(name_of_playlist, create_playlist)
 
 
 @bot.message_handler(commands=[Commands.ADD_MEDIA])
 def choose_playlist(message):
-    name_of_playlist = bot.send_message(message.chat.id, "Write name of playlist you want to add: ")
+    name_of_playlist = bot.send_message(message.chat.id, Messages.NAME_OF_PLAYLIST_MESSAGE)
     bot.register_next_step_handler(name_of_playlist, ask_link_to_current_playlist)
 
 
@@ -64,20 +65,24 @@ def get_playlists(message):
 
 @bot.message_handler(commands=[Commands.GET_MEDIAS])
 def choose_playlist_to_show_media(message):
-    playlist_name = bot.send_message(message.chat.id, "Write playlist name medias you watn to see: ")
+    playlist_name = bot.send_message(message.chat.id, Messages.NAME_OF_PLAYLIST_MESSAGE)
     bot.register_next_step_handler(playlist_name, get_medias_of_current_playlist)
 
 
 def ask_for_number(message):
-    youtube_parser.set_title(message.text)
+    # youtube_parser.set_title(message.text)
 
     number_message = bot.send_message(message.chat.id, Messages.GIVE_NUMBER_OF_VIDEOS_MESSAGE)
-    bot.register_next_step_handler(number_message, get_videos)
+    bot.register_next_step_handler(number_message, get_videos, message.text)
 
 
-def get_videos(number_message):
+def get_videos(number_message, name_of_youtube_query):
     try:
         number_of_the_videos = int(number_message.text)
+
+        youtube_parser = YouTubeParser()
+        youtube_parser.set_title(name_of_youtube_query)
+
         parse_result_dict = youtube_parser.parse(number_of_the_videos)
 
         for obj in parse_result_dict:
@@ -98,7 +103,7 @@ def choose_format(message):
 
 
 def get_audio(link_message):
-    bot.send_message(link_message.chat.id, "Downloading...")
+    bot.send_message(link_message.chat.id, Messages.DOWNLOADING_MESSAGE)
 
     try:
         file_info_list = AudioDownloader.download(link_message.text)
@@ -110,7 +115,7 @@ def get_audio(link_message):
 
 
 def get_video(link_message):
-    bot.send_message(link_message.chat.id, "Downloading...")
+    bot.send_message(link_message.chat.id, Messages.DOWNLOADING_MESSAGE)
 
     try:
         file_info_list = VideoDownloader.download(link_message.text)
@@ -124,30 +129,37 @@ def get_video(link_message):
 
 def create_playlist(name_of_playlist_message):
     DAO.create_playlist(name_of_playlist_message.chat.id, name_of_playlist_message.text)
-
-
-playlist_name = ""
-user_id = ""
+    bot.send_message(name_of_playlist_message.chat.id, Messages.PLAYLIST_CREATION_SUCCESS % name_of_playlist_message.text)
 
 
 def ask_link_to_current_playlist(name_of_playlist_message):
-    link_to_add = bot.send_message(name_of_playlist_message.chat.id, "Write link of the video you want to add: ")
-    global playlist_name
-    global user_id
     playlist_name = name_of_playlist_message.text
     user_id = name_of_playlist_message.chat.id
-    bot.register_next_step_handler(link_to_add, add_link_to_current_playlist)
+
+    try:
+        playlist_id = DAO.get_playlist_by_name_and_chatid(playlist_name, user_id)
+
+        link_to_add = bot.send_message(name_of_playlist_message.chat.id, Messages.LINK_OF_THE_VIDEO)
+
+        bot.register_next_step_handler(link_to_add, add_link_to_current_playlist, playlist_id, playlist_name)
+    except exc.SQLAlchemyError:
+        bot.send_message(user_id, Messages.PLAYLIST_ERROR)
 
 
-def add_link_to_current_playlist(link_message):
-    playlist_id = DAO.get_playlist_by_name_and_chatid(playlist_name, user_id)
+def add_link_to_current_playlist(link_message, playlist_id, playlist_name):
     DAO.add_media(playlist_id.id, link_message.text)
+    bot.send_message(link_message.chat.id, Messages.MEDIA_ADDITION_SUCCESS % playlist_name)
 
 
 def get_medias_of_current_playlist(name_of_playlist):
-    playlist_id = DAO.get_playlist_by_name_and_chatid(name_of_playlist.text, name_of_playlist.chat.id)
-    media_list = DAO.get_medias_from_playlist(playlist_id.id)
+    try:
+        playlist_id = DAO.get_playlist_by_name_and_chatid(name_of_playlist.text, name_of_playlist.chat.id)
+        media_list = DAO.get_medias_from_playlist(playlist_id.id)
 
-    for media in media_list:
-        print(media)
-        bot.send_message(name_of_playlist.chat.id, media.link)
+        if not len(media_list):
+            bot.send_message(name_of_playlist.chat.id, Messages.PLAYLIST_EMPTY_ERROR % name_of_playlist.text)
+
+        for media in media_list:
+            bot.send_message(name_of_playlist.chat.id, media.link)
+    except exc.SQLAlchemyError:
+        bot.send_message(name_of_playlist.chat.id, Messages.PLAYLIST_ERROR)

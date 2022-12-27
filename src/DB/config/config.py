@@ -2,7 +2,6 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
-import os
 from src.DB.models.Playlist import Base
 
 dotenv_path = Path('.env')
