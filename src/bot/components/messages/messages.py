@@ -3,6 +3,7 @@ from src.bot.components.keyboards.buttons.buttons import Buttons
 
 
 class Messages:
+    DURATION_ERROR = "Video is too long to download(>6min)"
     MEDIA_ADDITION_SUCCESS = "Link has been added to '%s'!"
 
     WELCOME_MESSAGE = f"Hello! This is Bot for getting and downloading content from Youtube. " \
