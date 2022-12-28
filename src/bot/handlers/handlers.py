@@ -103,29 +103,34 @@ def choose_format(message):
 
 
 def get_audio(link_message):
-    bot.send_message(link_message.chat.id, Messages.DOWNLOADING_MESSAGE)
+    if AudioDownloader.check_for_duration(link_message.text):
+        bot.send_message(link_message.chat.id, Messages.DOWNLOADING_MESSAGE)
 
-    try:
-        file_info_list = AudioDownloader.download(link_message.text)
-        bot.send_audio(link_message.chat.id, audio=open(file_info_list[0], 'rb'),
-                       duration=file_info_list[1])
+        try:
+            file_info_list = AudioDownloader.download(link_message.text)
+            bot.send_audio(link_message.chat.id, audio=open(file_info_list[0], 'rb'),
+                           duration=file_info_list[1])
 
-    except ValueError:
-        bot.send_message(link_message.chat.id, Messages.WRONG_URL_ERROR_MESSAGE)
+        except ValueError:
+            bot.send_message(link_message.chat.id, Messages.WRONG_URL_ERROR_MESSAGE)
+    else:
+        bot.send_message(link_message.chat.id, Messages.DURATION_ERROR)
 
 
 def get_video(link_message):
-    bot.send_message(link_message.chat.id, Messages.DOWNLOADING_MESSAGE)
+    if VideoDownloader.check_for_duration(link_message.text):
+        bot.send_message(link_message.chat.id, Messages.DOWNLOADING_MESSAGE)
 
-    try:
-        file_info_list = VideoDownloader.download(link_message.text)
+        try:
+            file_info_list = VideoDownloader.download(link_message.text)
 
-        bot.send_video(link_message.chat.id, video=open(file_info_list[0], 'rb'),
-                       duration=file_info_list[1])
+            bot.send_video(link_message.chat.id, video=open(file_info_list[0], 'rb'),
+                           duration=file_info_list[1])
 
-    except ValueError:
-        bot.send_message(link_message.chat.id, Messages.WRONG_URL_ERROR_MESSAGE)
-
+        except ValueError:
+            bot.send_message(link_message.chat.id, Messages.WRONG_URL_ERROR_MESSAGE)
+    else:
+        bot.send_message(link_message.chat.id, Messages.DURATION_ERROR)
 
 def create_playlist(name_of_playlist_message):
     DAO.create_playlist(name_of_playlist_message.chat.id, name_of_playlist_message.text)
