@@ -1,12 +1,12 @@
-from src.DB.utils.Engine import DAO
-from src.bot.components.commands.commands import Commands
-from src.bot.components.keyboards.buttons.buttons import Buttons
-from src.bot.components.keyboards.keyboard import KeyBoard
-from src.bot.components.messages.messages import Messages
-from src.bot.creator import bot_handler
-from src.downloader.utils.AudioDownloader import AudioDownloader
-from src.downloader.utils.VideoDownloader import VideoDownloader
-from src.parser.parser import YouTubeParser
+from app.DB.utils.Engine import DAO
+from app.bot.components.commands.commands import Commands
+from app.bot.components.keyboards.buttons.buttons import Buttons
+from app.bot.components.keyboards.keyboard import KeyBoard
+from app.bot.components.messages.messages import Messages
+from app.bot.creator import bot_handler
+from app.downloader.utils.AudioDownloader import AudioDownloader
+from app.downloader.utils.VideoDownloader import VideoDownloader
+from app.parser.parser import YouTubeParser
 from sqlalchemy import exc
 
 bot = bot_handler.bot

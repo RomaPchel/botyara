@@ -3,9 +3,9 @@ import uuid
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import UUID
 
-from src.DB.config.config import connect_and_get_engine
-from src.DB.models.Media import Media
-from src.DB.models.Playlist import Playlist
+from app.DB.config.config import connect_and_get_engine
+from app.DB.models.Media import Media
+from app.DB.models.Playlist import Playlist
 from sqlalchemy.orm import Session
 
 

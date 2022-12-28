@@ -1,5 +1,5 @@
 import youtube_dl as yt
-from src.downloader.models.Downloader import DownloaderInterface
+from app.downloader.models.Downloader import DownloaderInterface
 
 
 class AudioDownloader(DownloaderInterface):

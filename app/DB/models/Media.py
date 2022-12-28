@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 
-from src.DB.models.Playlist import Base
+from app.DB.models.Playlist import Base
 
 
 class Media(Base):

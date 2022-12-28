@@ -1,5 +1,5 @@
-from src.bot.components.commands.commands import Commands
-from src.bot.components.keyboards.buttons.buttons import Buttons
+from app.bot.components.commands.commands import Commands
+from app.bot.components.keyboards.buttons.buttons import Buttons
 
 
 class Messages:

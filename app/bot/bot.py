@@ -1,4 +1,4 @@
-#from src.bot.handlers.handlers import MessageHandler
+#from app.bot.handlers.handlers import MessageHandler
 
 import telebot
 

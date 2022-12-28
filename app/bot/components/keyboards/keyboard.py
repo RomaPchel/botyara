@@ -1,4 +1,4 @@
-from src.bot.components.keyboards.buttons.buttons import Buttons
+from app.bot.components.keyboards.buttons.buttons import Buttons
 import telebot
 
 
